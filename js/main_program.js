@@ -23,6 +23,8 @@ class Main {
 						para.push(tokens[i]); break;
 					case InstructionType.PARA_ADDR:
 						para.push(parseInt(tokens[i])); break;
+					case InstructionType.PARA_REG_R:
+						para.push(tokens[i]); break;
 				}
 			}
 			inst.push(new Instruction(++pc, instructionType, para));
@@ -61,6 +63,12 @@ class Main {
 								case InstructionType.PARA_ADDR:
 									tag = this.system.commonDataBus.getBusy(InstructionType.PARA_ADDR, inst.para[j]);
 									value = inst.para[j];
+									break;
+								case InstructionType.PARA_REG_R:
+									tag = this.system.commonDataBus.getBusy(InstructionType.PARA_REG_R, inst.para[j]);
+									if (tag == null) {
+										value = this.system.regFile_R.getReg(inst.para[j]);
+									}
 									break;
 							}
 						}
@@ -106,12 +114,15 @@ class Main {
 						case InstructionType.PARA_ADDR:
 							value = name;
 							break;
+						case InstructionType.PARA_REG_R:
+							this.system.regFile_R.setReg(name, value);
 					}
 					this.system.commonDataBus.setBusy(type, name, null);
 					this.system.commonDataBus.setResult(station, value);
 				}
 				station.instruction.wbTime = this.system.clock;
 				station.state = STATUS.IDLE;
+				// station.tags = null;
 			}
 		}
 		var done = true;

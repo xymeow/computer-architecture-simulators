@@ -12,3 +12,4 @@ class InstructionType {
 
 InstructionType.PARA_REG = 0;
 InstructionType.PARA_ADDR = 1;
+InstructionType.PARA_REG_R = 2;

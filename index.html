@@ -36,7 +36,7 @@
 				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="runover">执行到底</a>
 				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="step5">前进5步</a>
 				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="back5">后退5步</a>
-				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="reset">重置</a>
+				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="reset" href="#top">重置</a>
 				<!-- <footer class="page-footer">author: xymeow</footer> -->
 			</ul>
 		</header>
@@ -44,7 +44,7 @@
 		<main style="padding-left: 240px; margin-top: 20px; padding-right: 20px; margin-bottom: 300px;">
 			
 			
-				<div class="row">
+				<div class="row" id="top">
 					<div align="center">
 						<h5>设置</h5>
 					</div>
@@ -54,8 +54,8 @@
 								<div class="row">
 									<div class="input-field col s12">
 										<textarea id="textarea1" class="materialize-textarea">
-											ld f6, 21
-											ld f2, 2
+											ld f6, 21, r2
+											ld f2, 2, r3
 											muld f0, f2, f4
 											subd f8, f6, f2
 											divd f10, f0, f6
@@ -77,14 +77,14 @@
 									<label class="active" for="add_or_sub">加/减</label>
 								</div>
 								<div class="input-field col s6">
-									<input value="4" id="load" type="text">
+									<input value="2" id="load" type="text">
 									<label class="active" for="load">load</label>
 								</div>
 							</div>
 							
 							<div class="row">
 								<div class="input-field col s6 ">
-									<input value="4" id="mul" type="text">
+									<input value="10" id="mul" type="text">
 									<label class="active " for="mul">乘法</label>
 								</div>
 								<div class="input-field col s6">
@@ -127,11 +127,9 @@
 							<th>剩余时间</th>
 							<th data-field="name">站名</th>
 							<th>状态</th>
-							<th>操作码</th>
-							<th>第一操作数值</th>
-							<th>第一操作数状态</th>
-							<th>第二操作数值</th>
-							<th>第二操作数状态</th>
+							<th>Op</th>
+							<th>Vj/Qj</th>
+							<th>Vk/Qk</th>
 						</tr>
 					</thead>
 					<tbody id="t_RS">
@@ -210,7 +208,8 @@
 			function init(instructions) {
 				var System = {};
 				System.mem = new Memory(128);
-				System.regFile = new RegFile(10);
+				System.regFile = new RegFile(16, 'F');
+                System.regFile_R = new RegFile(16, 'R');
                 System.commonDataBus = new CommonDataBus();
 				System.reservationStation = {
                     Add1: new ReservationStation('Add1'),
@@ -230,7 +229,7 @@
 					[InstructionType.PARA_REG,
 					InstructionType.PARA_REG,
 					InstructionType.PARA_REG],
-					function(p) {return p[1] + p[2];},
+					function(p) {return p[1] + '+' + p[2];},
 					[System.reservationStation['Add1'],
 					System.reservationStation['Add2'],
 					System.reservationStation['Add3']]
@@ -242,7 +241,7 @@
 					[InstructionType.PARA_REG,
 					InstructionType.PARA_REG,
 					InstructionType.PARA_REG],
-					function(p) {return p[1] - p[2];},
+					function(p) {return p[1] + '-' + p[2];},
 					[System.reservationStation['Add1'],
 					System.reservationStation['Add2'],
 					System.reservationStation['Add3']]
@@ -254,7 +253,7 @@
                     [InstructionType.PARA_REG,
                     InstructionType.PARA_REG,
                     InstructionType.PARA_REG],
-                    function(p) {return p[1] * p[2];},
+                    function(p) {return p[1] + '*' + p[2];},
                     [System.reservationStation['Mul1'],
                     System.reservationStation['Mul2']]
                     ),
@@ -265,7 +264,7 @@
                     [InstructionType.PARA_REG,
                     InstructionType.PARA_REG,
                     InstructionType.PARA_REG],
-                    function(p) {return p[1] / p[2];},
+                    function(p) {return p[1] + '/' + p[2];},
                     [System.reservationStation['Mul1'],
                     System.reservationStation['Mul2']]
                     ),
@@ -274,8 +273,9 @@
                     parseInt(document.getElementById('load').value),
                     0,
                     [InstructionType.PARA_REG,
-                    InstructionType.PARA_ADDR],
-                    function(p) {return this.memory.load(p[1]);}, //this = buffer
+                    InstructionType.PARA_ADDR,
+                    InstructionType.PARA_REG_R],
+                    function(p) {return this.memory.load(p[2]+'+'+p[1]);}, //this = buffer
                     [System.reservationStation['Load1'],
                     System.reservationStation['Load2'],
                     System.reservationStation['Load3']]
@@ -331,7 +331,7 @@
                 for (var i = 0; i < main.system.regFile.count; i++) {
                     var busy = main.system.commonDataBus.getBusy(InstructionType.PARA_REG, 'F'+i);
                     var value = main.system.regFile.getReg('F'+i);
-                    document.getElementById('reg_F'+i).cells[2].innerHTML = value.toFixed(5);
+                    document.getElementById('reg_F'+i).cells[2].innerHTML = value;
                 }
                 for (var i = 0; i < main.instructions.length; i++) {
                     var inst = main.instructions[i];
@@ -345,7 +345,7 @@
                     if (rs.substring(0, 4) !== 'Load')
                         var station_html = document.getElementById('station_'+rs);
                     else
-                        var station_html = document.getElementById('load_' + rs);
+                        var load_html = document.getElementById('load_' + rs);
                     var _html;
                     switch(station.state) {
                         case STATUS.IDLE:
@@ -357,24 +357,71 @@
                         case STATUS.WRITE:
                             _html = 'WRITE'; break;
                     }
-                    station_html.cells[2].innerHTML = _html;
+                    
+                    
                     var _time = -1;
+                    var _tags = new Array(3);
+                    var _op = '';
                     if (station.state !== STATUS.IDLE) {
                         if (station.instruction) {
                             _time = station.instruction.time;
+                            _op = station.instruction.type.name;
                         }
-                        
+                        for (var i = 0; i < 3; i ++) {
+                            _tags[i] = '';
+                            if (i >= station.para.length)
+                               ;
+                            else {
+                                // alert(i);
+                                if (station.tags[i]){
+                                    // _tags[i]
+                                    if (station.tags[i].name !== 'undefined')
+                                        _tags[i] = station.tags[i].name;
+                                    else
+                                        _tags[i] = '';
+                                    // _tags[i] = 'ddd';
+                                }
+                                else {
+                                    if (station.para[i] !== 'undefined')
+                                        _tags[i] = station.para[i];
+                                    else
+                                        _tags[i] = '';
+                                }
+                            }
+
+                        }
 
                     }
                     else {
-
+                        // station.instruction = null;
+                        for (var i = 0; i < 3; i++) {
+                            _tags[i] = '';
+                        }
+                        // station.instruction.type.name = '';
                     }
-                    station_html.cells[0].innerHTML = _time >= 0 ? _time : '';
+                    
+                    if (rs.substring(0, 4) !== 'Load') {
+                        station_html.cells[2].innerHTML = _html;
+                        station_html.cells[0].innerHTML = _time >= 0 ? _time : '';
+                        // alert(rs);
+                        // if (station.tags)
+                        
+                        if (station.instruction) {
+                            station_html.cells[3].innerHTML = _op;
+                            station_html.cells[4].innerHTML = _tags[1];
+                            station_html.cells[5].innerHTML = _tags[2];
+                        }
+                    }
+                    else {
+                        load_html.cells[2].innerHTML = _html;
+                        load_html.cells[0].innerHTML = _time >= 0 ? _time : '';
+                    }
                     $('#pc').get(0).innerHTML = main.issuedInst;
                 }
             }
 
             var main;
+            var interval;
 			$(document).ready(function() {
 				$("#config").click(function() {
 					$("html, body").animate({
@@ -407,7 +454,25 @@
                 interval = setInterval(function(){$('#step').click();}, 100);
             })
             $('#reset').click(function () {
+                if (interval)
+                    clearInterval(interval);
+                $("html, body").animate({
+                        scrollTop: $($(this).attr("href")).offset().top + "px"
+                    }, {
+                        duration: 500,
+                        easing: "swing"
+                    });
                 init_flag = true;
+                document.getElementById('time').innerHTML = '';
+                document.getElementById('pc').innerHTML = '';
+                $('#t_RS').get(0).innerHTML = null;
+                $('#t_LS').get(0).innerHTML = null;
+                $('#t_IS').get(0).innerHTML = null;
+                $('#t_RegS').get(0).innerHTML = null;
+                IS.style.display="none";
+                RS.style.display="none";
+                RegS.style.display="none";
+                LS.style.display="none";
             })
             
 			</script>
