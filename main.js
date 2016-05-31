@@ -18,13 +18,13 @@ app.on('window-all-closed', function() {
 // 这个方法就被调用
 app.on('ready', function() {
   // 创建浏览器窗口。
-  mainWindow = new BrowserWindow({width: 1000, height: 800, resizable: false});
+  mainWindow = new BrowserWindow({width: 1100, height: 800, resizable: false});
 
   // 加载应用的 index.html
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 
   // 打开开发工具
-  mainWindow.openDevTools();
+  // mainWindow.openDevTools();
 
   // 当 window 被关闭，这个事件会被发出
   mainWindow.on('closed', function() {

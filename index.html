@@ -32,10 +32,10 @@
 				<li align="center">PC：<span id="pc"></span></li>
 				<li align="center">time: <span id="time"></span></li>
 				<a style="margin-top: 0px;" class="waves-effect waves-light btn blue lighten-3 white-text" id="step">前进一步</a>
-				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="back">后退一步</a>
+				<!-- <a class="waves-effect waves-light btn blue lighten-3 white-text" id="back">后退一步</a> -->
 				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="runover">执行到底</a>
-				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="step5">前进5步</a>
-				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="back5">后退5步</a>
+				<!-- <a class="waves-effect waves-light btn blue lighten-3 white-text" id="step5">前进5步</a>
+				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="back5">后退5步</a> -->
 				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="reset" href="#top">重置</a>
 				<!-- <footer class="page-footer">author: xymeow</footer> -->
 			</ul>
@@ -54,12 +54,12 @@
 								<div class="row">
 									<div class="input-field col s12">
 										<textarea id="textarea1" class="materialize-textarea">
-											ld f6, 21, r2
-											ld f2, 2, r3
-											muld f0, f2, f4
-											subd f8, f6, f2
-											divd f10, f0, f6
-											addd f6, f8, f2
+											ld f8, 21, r3
+											ld f4, 16, r4
+											muld f2, f4, f6
+											subd f10, f8, f4
+											divd f12, f2, f8
+											addd f8, f10, f4
 										</textarea>
 										<label for="textarea1">指令</label>
 									</div>
@@ -187,7 +187,7 @@
 			<script type="text/javascript" src="js/instruction_type.js"></script>
             <script type="text/javascript" src="js/reservation_station.js"></script>
             
-            <script type="text/javascript" src="js/commonbus.js"></script>
+            <script type="text/javascript" src="js/commondatabus.js"></script>
             <script type="text/javascript" src="js/regfile.js"></script>
             <script type="text/javascript" src="js/memory.js"></script>
             <script type="text/javascript" src="js/buffer.js"></script>
@@ -336,8 +336,11 @@
                 for (var i = 0; i < main.instructions.length; i++) {
                     var inst = main.instructions[i];
                     var inst_tr = document.getElementById('inst_'+inst.pc);
+                    var est = inst.execSTime > 0 ? inst.execSTime : '';
+                    var _tmp = inst.execSTime > 0 ? ' ~ ' : '';
+                    var et = inst.execTime > 0 ? inst.execTime : '';
                     inst_tr.cells[1].innerHTML = inst.issueTime > 0 ? inst.issueTime : '';
-                    inst_tr.cells[2].innerHTML = inst.execTime > 0 ? inst.execTime : '';
+                    inst_tr.cells[2].innerHTML = est + _tmp + et;
                     inst_tr.cells[3].innerHTML = inst.wbTime > 0 ? inst.wbTime : '';
                 }
                 for (var rs in main.system.reservationStation) {
@@ -362,6 +365,7 @@
                     var _time = -1;
                     var _tags = new Array(3);
                     var _op = '';
+                    var _plus = '+';
                     if (station.state !== STATUS.IDLE) {
                         if (station.instruction) {
                             _time = station.instruction.time;
@@ -397,8 +401,11 @@
                         for (var i = 0; i < 3; i++) {
                             _tags[i] = '';
                         }
+                        _plus = '';
                         // station.instruction.type.name = '';
                     }
+                    if (_tags[0])
+                    	document.getElementById('reg_'+_tags[0]).cells[1].innerHTML = rs;
                     
                     if (rs.substring(0, 4) !== 'Load') {
                         station_html.cells[2].innerHTML = _html;
@@ -406,15 +413,31 @@
                         // alert(rs);
                         // if (station.tags)
                         
-                        if (station.instruction) {
+                        // if (station.instruction) {
+
+
                             station_html.cells[3].innerHTML = _op;
                             station_html.cells[4].innerHTML = _tags[1];
                             station_html.cells[5].innerHTML = _tags[2];
-                        }
+                        // }
                     }
                     else {
                         load_html.cells[2].innerHTML = _html;
                         load_html.cells[0].innerHTML = _time >= 0 ? _time : '';
+                        load_html.cells[3].innerHTML = _tags[1] +_plus + _tags[2];
+                        if (station && station.instruction && _time === station.instruction.type.cycles) {
+							
+	                        	load_html.cells[3].innerHTML = _tags[1];
+                        }
+                        
+                        // if (station.instruction) {
+                        // }
+                        if (station.state === STATUS.WRITE) {
+                            load_html.cells[4].innerHTML = 'M['+_tags[1] +_plus + _tags[2]+']';
+                        }
+                        else {
+                            load_html.cells[4].innerHTML = '';
+                        }
                     }
                     $('#pc').get(0).innerHTML = main.issuedInst;
                 }
@@ -445,10 +468,16 @@
 					return false;
 				});
 			});
-
+            var done = false;
             $('#step').click(function() { 
-                var done = main.step();      
-                update(main);
+                if (done) {
+                    clearInterval(interval);
+                    $('#runover').attr('disabled', null);
+                }
+                else {
+                   done = main.step();      
+                    update(main); 
+                }  
             });
             $('#runover').click(function() {
                 interval = setInterval(function(){$('#step').click();}, 100);
@@ -463,6 +492,7 @@
                         easing: "swing"
                     });
                 init_flag = true;
+                done = false;
                 document.getElementById('time').innerHTML = '';
                 document.getElementById('pc').innerHTML = '';
                 $('#t_RS').get(0).innerHTML = null;

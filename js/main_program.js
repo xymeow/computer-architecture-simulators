@@ -4,6 +4,7 @@
 
 // ReservationStation = require('./reservation_station.js');
 
+
 class Main {
 	constructor (instruction, system) {
 		var pc = 0;
@@ -39,7 +40,7 @@ class Main {
 			var inst = this.instructions[this.issuedInst];
 			var stations = inst.type.station;
 			for (var i = 0; i < stations.length; i++) {
-				if (stations[i].state == STATUS.IDLE) {
+				if (stations[i].state === STATUS.IDLE) {
 					var station = stations[i];
 					station.state = STATUS.ISSUE;
 					station.instruction = inst;
@@ -81,7 +82,7 @@ class Main {
 					}
 					var type = inst.type.para[dest];
 					var name = inst.para[dest];
-					this.system.commonDataBus.setBusy(type, name, station);
+					this.system.commonDataBus.setBusy(type, name, station); ///
 					this.issuedInst ++;
 					break;
 					// alert(this.issuedInst);
@@ -92,6 +93,10 @@ class Main {
 		for (var i in this.system.reservationStation) {
 			var station = this.system.reservationStation[i];
 			if (station.state === STATUS.EXEC) {
+				if (station.instruction.execFlag) {
+					station.instruction.execSTime = this.system.clock;
+					station.instruction.execFlag = false;
+				}
 				// alert(station.instruction);
 				if ((--station.instruction.time) === 0) { // *********
 					station.instruction.execTime = this.system.clock;
@@ -103,10 +108,18 @@ class Main {
 				var type = station.instruction.type.para[dest];
 				var name = station.instruction.para[dest];
 				var value = station.instruction.type.act.call(station, station.para);
+				var pc = station.instruction.pc;
+				// alert(station.name);
+				// alert(value);
+				// alert(type);
+				// alert(name);
+				// alert(this.system.commonDataBus.getBusy(type, name).name);
 				if (typeof value === 'undefined') {
 					value = true;
 				}
+
 				if (this.system.commonDataBus.getBusy(type, name) === station) {
+					// alert('aaa');
 					switch (type) {
 						case InstructionType.PARA_REG:
 							this.system.regFile.setReg(name, value);
@@ -117,11 +130,12 @@ class Main {
 						case InstructionType.PARA_REG_R:
 							this.system.regFile_R.setReg(name, value);
 					}
-					this.system.commonDataBus.setBusy(type, name, null);
+					this.system.commonDataBus.setUnbusy(type, name, station);
 					this.system.commonDataBus.setResult(station, value);
 				}
 				station.instruction.wbTime = this.system.clock;
 				station.state = STATUS.IDLE;
+				// station.instruction = null;
 				// station.tags = null;
 			}
 		}
@@ -132,7 +146,9 @@ class Main {
 				var needMore = false;
 				for (var j = 0; j < station.tags.length; j++) {
 					if(station.tags[j] !== null) {
+						// alert(station.tags[j].name);
 						var value = this.system.commonDataBus.getResult(station.tags[j]);
+						// alert(value);
 						if (value != null) {
 							station.para[j] = value;
 							station.tags[j] = null;
@@ -143,19 +159,25 @@ class Main {
 				}
 				if (!needMore) {
 					station.state = STATUS.EXEC;
+					// station.instruction.execSTime = this.system.clock+1;
+					station.instruction.execFlag = true;
 					// alert(station.name);
 				}
 			}
 		}
-		if (station.state !== STATUS.IDLE) {
-			done = false;
+		for (var i in this.system.reservationStation) {
+			var station = this.system.reservationStation[i];
+			if (station.state !== STATUS.IDLE) {
+				done = false;
+			}
+			else {
+				station.instruction = null;
+			}
 		}
+			
 		this.system.commonDataBus.clearResult();
+		// alert(done);
 		return done;
-	}
-
-	run () {
-		while (!this.step());
 	}
 	// reset () {
 	// 	this.system.clock = 0;
