@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>snooping</title>
+			<!--Import Google Icon Font-->
+			<!-- <link href="http://fonts.lug.ustc.edu.cn/icon?family=Material+Icons" rel="stylesheet"> -->
+			<!--Import materialize.css-->
+			<link type="text/css" rel="stylesheet" href="css/materialize.min.css"	media="screen,projection"/>
+
+			<!--Let browser know website is optimized for mobile-->
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<style type="text/css">
+				/*#act-cpu1 {
+					width: 50px;
+					align-self: left;
+				}*/
+				.invalid {
+					background-color: #78909c;
+					color: white;
+					text-align: center;
+				}
+				.cblock {
+					column-width: 100px;
+				}
+				.shared {
+					background-color: #2196f3;
+					color: white;
+					text-align: center;
+				}
+				.modified {
+					background-color: #ef5350;
+					color: white;
+					text-align: center;
+				}
+				td {
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+			</style>
+</head>
+
+<body>
+	<nav class="blue darken-1" role="navigation">
+		<div class="nav-wrapper container">
+			<a href="#" class="brand-logo">Snooping Sim</a>
+			<ul class="right">
+				<li>
+					<a class="modal-trigger" href="javascript: $('#modal1').openModal();">统计数据</a>
+				</li>
+				<li>
+					<a href="javascript: reset();">重置</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="row" style="margin-top: 25px;">
+			<div class="s3 col center">
+				<b>CPU 1</b>
+				<div class="row">
+					<div class="input-field col s4">
+						<input value="0" id="act-cpu1" type="text">
+						<label class="active" for="act-cpu1">操作块号</label>
+					</div>
+					<div class="input-field col s4">
+						<input value="0" id="write-cpu1" type="text">
+						<label class="active" for="write-cpu1">写入数据</label>
+					</div>
+					<div class="col ">
+						<a class="btn-floating btn waves-effect waves-light blue" href="javascript: read(parseInt($('#act-cpu1').get(0).value), 'cpu1');">读</a>
+					</div>
+					<div class="col ">
+						<a class="btn-floating btn waves-effect waves-light red" href="javascript: write(parseInt($('#act-cpu1').get(0).value), parseInt($('#write-cpu1').get(0).value), 'cpu1');">写</a>
+					</div>
+				</div>
+	
+				<table class="bordered">
+					<tbody id="cpu1">
+					</tbody>
+				</table>
+			</div>
+			<div class="s3 col center">
+				<b>CPU 2</b>
+				<div class="row">
+					<div class="input-field col s4">
+						<input value="0" id="act-cpu2" type="text">
+						<label class="active" for="act-cpu2">操作块号</label>
+					</div>
+					<div class="input-field col s4">
+						<input value="0" id="write-cpu2" type="text">
+						<label class="active" for="write-cpu2">写入数据</label>
+					</div>
+					<div class="col ">
+						<a class="btn-floating btn waves-effect waves-light blue" href="javascript: read(parseInt($('#act-cpu2').get(0).value), 'cpu2');">读</a>
+					</div>
+					<div class="col ">
+						<a class="btn-floating btn waves-effect waves-light red" href="javascript: write(parseInt($('#act-cpu2').get(0).value), parseInt($('#write-cpu2').get(0).value), 'cpu2');">写</a>
+					</div>
+				</div>
+	
+				<table class="bordered">
+					<tbody id="cpu2">
+					</tbody>
+				</table>
+			</div>
+			<div class="s3 col center">
+				<b>CPU 3</b>
+				<div class="row">
+					<div class="input-field col s4">
+						<input value="0" id="act-cpu3" type="text">
+						<label class="active" for="act-cpu3">操作块号</label>
+					</div>
+					<div class="input-field col s4">
+						<input value="0" id="write-cpu3" type="text">
+						<label class="active" for="write-cpu3">写入数据</label>
+					</div>
+					<div class="col ">
+						<a class="btn-floating btn waves-effect waves-light blue" href="javascript: read(parseInt($('#act-cpu3').get(0).value), 'cpu3');">读</a>
+					</div>
+					<div class="col ">
+						<a class="btn-floating btn waves-effect waves-light red" href="javascript: write(parseInt($('#act-cpu3').get(0).value), parseInt($('#write-cpu3').get(0).value), 'cpu3');">写</a>
+					</div>
+				</div>
+	
+				<table class="bordered">
+					<tbody id="cpu3">
+					</tbody>
+				</table>
+			</div>
+			<div class="s3 col center">
+				<b>CPU 4</b>
+				<div class="row">
+					<div class="input-field col s4">
+						<input value="0" id="act-cpu4" type="text">
+						<label class="active" for="act-cpu4">操作块号</label>
+					</div>
+					<div class="input-field col s4">
+						<input value="0" id="write-cpu4" type="text">
+						<label class="active" for="write-cpu4">写入数据</label>
+					</div>
+					<div class="col ">
+						<a class="btn-floating btn waves-effect waves-light blue" href="javascript: read(parseInt($('#act-cpu4').get(0).value), 'cpu4');">读</a>
+					</div>
+					<div class="col ">
+						<a class="btn-floating btn waves-effect waves-light red" href="javascript: write(parseInt($('#act-cpu4').get(0).value), parseInt($('#write-cpu4').get(0).value), 'cpu4');">写</a>
+					</div>
+				</div>
+	
+				<table class="bordered">
+					<tbody id="cpu4">
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 80px;">
+		<p align="center">memory</p>
+			<table id="mem" class="bordered">
+			</table>
+		</div>
+	</div>
+
+
+	<div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>统计数据</h4>
+      <div class="row center">
+      	<div class="col s3">
+      		<b>CPU1</b>
+      		<p>操作次数 </p><span id="cpu1_optime"></span>
+      		<p>Cache miss: </p><span id="cpu1_cachemiss"></span>
+      		<p>命中率 </p><span id="cpu1_hitrate"></span>
+
+      	</div>
+      	<div class="col s3">
+      		<b>CPU2</b>
+      		<p>操作次数 </p><span id="cpu2_optime"></span>
+      		<p>Cache miss: </p><span id="cpu2_cachemiss"></span>
+      		<p>命中率 </p><span id="cpu2_hitrate"></span>
+      	</div>
+      	<div class="col s3">
+      		<b>CPU3</b>
+      		<p>操作次数 </p><span id="cpu3_optime"></span>
+      		<p>Cache miss: </p><span id="cpu3_cachemiss"></span>
+      		<p>命中率 </p><span id="cpu3_hitrate"></span>
+      	</div>
+      	<div class="col s3">
+      		<b>CPU4</b>
+      		<p>操作次数 </p><span id="cpu4_optime"></span>
+      		<p>Cache miss: </p><span id="cpu4_cachemiss"></span>
+      		<p>命中率 </p><span id="cpu4_hitrate"></span>
+      	</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">知道啦</a>
+    </div>
+  </div>
+
+	<script type="text/javascript" src="js/jquery-2.2.0.min.js"></script>
+	<!-- <script type="text/javascript" src="js/hammer.min.js"></script> -->
+	<script type="text/javascript" src="js/materialize.min.js"></script>
+	<script type="text/javascript" src="js/CPU.js"></script>
+    <script type="text/javascript" src="js/block.js"></script>
+    <script type="text/javascript" src="js/bus.js"></script>
+    <script type="text/javascript" src="js/mem.js"></script>
+	<script type="text/javascript">
+		function newline(num) {
+			return '<tr><td>'+num+'</td><td class="invalid cblock"></td></tr>';
+		}
+		function initcpu(cpu) {
+			var _line = '';
+			for(var i = 0; i < 4; i ++)
+				_line += newline(i);
+			cpu.get(0).innerHTML += _line;
+		}
+		function initmem(mem) {
+			var _text = '';
+			for (var i = 0; i < 8; i++) {
+				_text += '<tr>';
+				for (var j = 0; j < 4; j ++){
+					_text += '<td>'+(i*4+j)+'</td><td class="invalid cblock"> '+(i*4+j)+'</td>';
+				}
+				_text += '</tr>';
+			}
+			mem.get(0).innerHTML += _text;
+		}
+		var Ucpu1 = $('#cpu1');
+		var Ucpu2 = $('#cpu2');
+		var Ucpu3 = $('#cpu3');
+		var Ucpu4 = $('#cpu4');
+		var Umem = $('#mem');
+		function initUI() {
+			initcpu(Ucpu1);
+			initcpu(Ucpu2);
+			initcpu(Ucpu3);
+			initcpu(Ucpu4);
+			initmem(Umem);
+		}
+		initUI();
+
+		var cpu1 = new CPU(4, 'cpu1');
+		var cpu2 = new CPU(4, 'cpu2');
+		var cpu3 = new CPU(4, 'cpu3');
+		var cpu4 = new CPU(4, 'cpu4');
+		var allcpu = {'cpu1':cpu1, 'cpu2':cpu2, 'cpu3':cpu3, 'cpu4':cpu4};
+		var mem = new Memory(32);
+		var bus = new Bus();
+
+		var cpu1s = {
+			'optime': 0,
+			'miss': 0,
+			'hitrate': 0.0
+		}
+		var cpu2s = {
+			'optime': 0,
+			'miss': 0,
+			'hitrate': 0.0
+		}
+		var cpu3s = {
+			'optime': 0,
+			'miss': 0,
+			'hitrate': 0.0
+		}
+		var cpu4s = {
+			'optime': 0,
+			'miss': 0,
+			'hitrate': 0.0
+		}
+		//updateUI();
+		function setCPUS(cpu) {
+			switch(cpu) {
+				case 'cpu1': return cpu1s;
+				case 'cpu2': return cpu2s;
+				case 'cpu3': return cpu3s;
+				case 'cpu4': return cpu4s;
+			}
+		}
+		
+		function write(addr, data, cpu) {
+			var tcpu = allcpu[cpu];
+			var ishit = tcpu.write(addr, data, allcpu, bus, mem);
+			setCPUS(cpu).optime ++;
+			if (!ishit)
+				setCPUS(cpu).miss ++;
+			updateUI();
+		}
+		function read(addr, cpu) {
+			var tcpu = allcpu[cpu];
+			var ishit = tcpu.read(addr, bus, mem, allcpu);
+			setCPUS(cpu).optime ++;
+			if (!ishit)
+				setCPUS(cpu).miss ++;
+			updateUI();
+		}
+		function reset() {
+			for(var tcpu in allcpu)
+				allcpu[tcpu].reset();
+			mem.reset();
+			bus.reset();
+			cpu1s = {
+				'optime': 0,
+				'miss': 0,
+				'hitrate': 0.0
+			}
+			cpu2s = {
+				'optime': 0,
+				'miss': 0,
+				'hitrate': 0.0
+			}
+			cpu3s = {
+				'optime': 0,
+				'miss': 0,
+				'hitrate': 0.0
+			}
+			cpu4s = {
+				'optime': 0,
+				'miss': 0,
+				'hitrate': 0.0
+			}
+			updateUI();
+		}
+
+		function Ustatus(block) {
+			var sta = '';
+			switch (block.status) {
+				case STATUS.INVALID: sta = 'invalid'; break;
+				case STATUS.SHARED: sta = 'shared'; break;
+				case STATUS.MODIFIED: sta = 'modified'; break;
+			}
+			return sta;
+		}
+
+		function updateUI() {
+			for (var i = 0; i < 8; i ++) {
+				for (var j = 0; j < 8; j += 2) {
+					Umem.get(0).rows[i].cells[j+1].innerHTML = mem.data[i*4+j/2];
+				} 
+			}
+			for (var i = 0; i < 4; i ++) {
+				Ucpu1.get(0).rows[i].cells[1].innerHTML = cpu1.block[i].data;
+				Ucpu2.get(0).rows[i].cells[1].innerHTML = cpu2.block[i].data;
+				Ucpu3.get(0).rows[i].cells[1].innerHTML = cpu3.block[i].data;
+				Ucpu4.get(0).rows[i].cells[1].innerHTML = cpu4.block[i].data;
+
+				Ucpu1.get(0).rows[i].cells[1].className = "cblock " + Ustatus(cpu1.block[i]);
+				Ucpu2.get(0).rows[i].cells[1].className = "cblock " + Ustatus(cpu2.block[i]);
+				Ucpu3.get(0).rows[i].cells[1].className = "cblock " + Ustatus(cpu3.block[i]);
+				Ucpu4.get(0).rows[i].cells[1].className = "cblock " + Ustatus(cpu4.block[i]);
+			}
+			$('#cpu1_optime').get(0).innerHTML = cpu1s.optime;
+			$('#cpu1_cachemiss').get(0).innerHTML = cpu1s.miss;
+			$('#cpu1_hitrate').get(0).innerHTML = 1-(cpu1s.miss/cpu1s.optime);
+			$('#cpu2_optime').get(0).innerHTML = cpu2s.optime;
+			$('#cpu2_cachemiss').get(0).innerHTML = cpu2s.miss;
+			$('#cpu2_hitrate').get(0).innerHTML = 1-(cpu2s.miss/cpu2s.optime);
+			$('#cpu3_optime').get(0).innerHTML = cpu3s.optime;
+			$('#cpu3_cachemiss').get(0).innerHTML = cpu3s.miss;
+			$('#cpu3_hitrate').get(0).innerHTML = 1-(cpu3s.miss/cpu3s.optime);
+			$('#cpu4_optime').get(0).innerHTML = cpu4s.optime;
+			$('#cpu4_cachemiss').get(0).innerHTML = cpu4s.miss;
+			$('#cpu4_hitrate').get(0).innerHTML = 1-(cpu4s.miss/cpu4s.optime);
+		}
+
+	</script>
+</body>
+</html>
