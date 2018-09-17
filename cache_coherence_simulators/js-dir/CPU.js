@@ -97,10 +97,7 @@ class CPU {
 			this.dir[i].status = STATUS.INVALID;
 			this.dir[i].dirlist = [];
 		}
-		for (var i = 0; i < 8; i ++) {
-
-			
-		}
+		this.mem.reset();
 	}
 	
 }
