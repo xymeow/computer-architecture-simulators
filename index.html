@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Tomasulo</title>
+			<!--Import Google Icon Font-->
+			<!-- <link href="http://fonts.lug.ustc.edu.cn/icon?family=Material+Icons" rel="stylesheet"> -->
+			<!--Import materialize.css-->
+			<link type="text/css" rel="stylesheet" href="css/materialize.min.css"	media="screen,projection"/>
+
+			<!--Let browser know website is optimized for mobile-->
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<style type="text/css">
+			table {
+				margin-top: 20px;
+			}
+            td {
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+			</style>
+		</head>
+
+		<body>
+		<header>
+			<ul class="side-nav fixed">
+				<li class="logo"><h5 align="center" class="grey-text lighten-5">tomasulo sim</h1></li>
+				<li align="center">author: xymeow </li>
+				<div class="divider"></div>
+				<li align="center">PC：<span id="pc"></span></li>
+				<li align="center">time: <span id="time"></span></li>
+				<a style="margin-top: 0px;" class="waves-effect waves-light btn blue lighten-3 white-text" id="step">前进一步</a>
+				<!-- <a class="waves-effect waves-light btn blue lighten-3 white-text" id="back">后退一步</a> -->
+				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="runover">执行到底</a>
+				<!-- <a class="waves-effect waves-light btn blue lighten-3 white-text" id="step5">前进5步</a>
+				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="back5">后退5步</a> -->
+				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="reset" href="#top">重置</a>
+				<!-- <footer class="page-footer">author: xymeow</footer> -->
+			</ul>
+		</header>
+
+		<main style="padding-left: 240px; margin-top: 20px; padding-right: 20px; margin-bottom: 300px;">
+			
+			
+				<div class="row" id="top">
+					<div align="center">
+						<h5>设置</h5>
+					</div>
+					<div class="col s6">
+						<div class="container">
+							<form class="col s12">
+								<div class="row">
+									<div class="input-field col s12">
+										<textarea id="textarea1" class="materialize-textarea">
+											ld f8, 21, r3
+											ld f4, 16, r4
+											muld f2, f4, f6
+											subd f10, f8, f4
+											divd f12, f2, f8
+											addd f8, f10, f4
+										</textarea>
+										<label for="textarea1">指令</label>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					<div class="col s6">
+						<div class="container">
+							功能部件执行时间
+							<div class="row">
+								<div class="input-field col s6">
+									<input value="2" id="add_or_sub" type="text">
+									<label class="active" for="add_or_sub">加/减</label>
+								</div>
+								<div class="input-field col s6">
+									<input value="2" id="load" type="text">
+									<label class="active" for="load">load</label>
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="input-field col s6 ">
+									<input value="10" id="mul" type="text">
+									<label class="active " for="mul">乘法</label>
+								</div>
+								<div class="input-field col s6">
+									<input value="40" id="divide" type="text">
+									<label class="active" for="divide">除法</label>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<div align="center">
+						<a class="waves-effect waves-light btn blue lighten-3 white-text" id="config" href="#show">设定完成</a>
+					</div>
+					
+				</div>
+			<div class="divider"></div>
+
+			<!-- <div class="container" id="show"> -->
+			<div class="row" id="show">
+			<div class="col s8">
+				<table class="striped" id="inst_status">
+				<caption>指令状态表</caption>
+					<thead>
+						<tr>
+							<th>指令</th>
+							<th>流出</th>
+							<th>执行</th>
+							<th>写结果</th>
+						</tr>
+					</thead>
+					<tbody id="t_IS">
+						
+					</tbody>
+				</table>
+				
+				<table class="striped" id="reserve_station">
+					<caption>保留站信息</caption>
+					<thead>
+						<tr>
+							<th>剩余时间</th>
+							<th data-field="name">站名</th>
+							<th>状态</th>
+							<th>Op</th>
+							<th>Vj/Qj</th>
+							<th>Vk/Qk</th>
+						</tr>
+					</thead>
+					<tbody id="t_RS">
+						
+					</tbody>
+				</table>
+				<table class="striped" id="load_status">
+					<caption>load部件</caption>
+					<thead>
+						<tr>
+                            <th>剩余时间</th>
+							<th>名称</th>
+							<th>状态</th>
+							<th>地址</th>
+							<th>值</th>
+						</tr>
+					</thead>
+					<tbody id="t_LS">
+						
+					</tbody>
+				</table>
+			</div>
+			<div class="col s4">
+				<table class="striped" id="reg_status">
+					<caption>寄存器状态</caption>
+					<thead>
+						<tr>
+							<th>寄存器名</th>
+							<th>寄存器状态</th>
+							<th>寄存器内容</th>
+						</tr>
+					</thead>
+					<tbody id="t_RegS">
+						
+					</tbody>
+				</table>
+			</div>
+				
+				
+				
+				
+				
+			</div>
+		</main>
+		</div>
+		
+			<!--Import jQuery before materialize.js-->
+			<script type="text/javascript" src="js/jquery-2.2.0.min.js"></script>
+			<script>
+	window.jQuery = window.$ = require('./js/jquery-2.2.0.min.js');
+	// window.jQuery = window.$ = require('./js/materialize.min.js');
+</script>
+	<script type="text/javascript" src="js/hammer.min.js"></script>
+			<script type="text/javascript" src="js/materialize.min.js"></script>
+			<script type="text/javascript" src="js/instruction_type.js"></script>
+            <script type="text/javascript" src="js/reservation_station.js"></script>
+            
+            <script type="text/javascript" src="js/commondatabus.js"></script>
+            <script type="text/javascript" src="js/regfile.js"></script>
+            <script type="text/javascript" src="js/memory.js"></script>
+            <script type="text/javascript" src="js/buffer.js"></script>
+            <script type="text/javascript" src="js/instruction.js"></script>
+            <script type="text/javascript" src="js/main_program.js"></script>
+			<script type="text/javascript">
+			var IS = document.getElementById('inst_status');
+			var RS = document.getElementById('reserve_station');
+			var RegS = document.getElementById('reg_status');
+			var LS = document.getElementById('load_status');
+			IS.style.display="none";
+			RS.style.display="none";
+			RegS.style.display="none";
+			LS.style.display="none";
+			var init_flag = true;
+
+
+			function init(instructions) {
+				var System = {};
+				System.mem = new Memory(128);
+				System.regFile = new RegFile(16, 'F');
+                System.regFile_R = new RegFile(16, 'R');
+                System.commonDataBus = new CommonDataBus();
+				System.reservationStation = {
+                    Add1: new ReservationStation('Add1'),
+                    Add2: new ReservationStation('Add2'),
+                    Add3: new ReservationStation('Add3'),
+                    Mul1: new ReservationStation('Mul1'),
+                    Mul2: new ReservationStation('Mul2'),
+                    Load1: new Buffer('Load1', System.mem),
+                    Load2: new Buffer('Load2', System.mem),
+                    Load3: new Buffer('Load3', System.mem)
+				};
+				System.instructionTypes = {
+
+					'ADDD': new InstructionType('ADDD', 
+					parseInt(document.getElementById('add_or_sub').value),
+					0,
+					[InstructionType.PARA_REG,
+					InstructionType.PARA_REG,
+					InstructionType.PARA_REG],
+					function(p) {return p[1] + '+' + p[2];},
+					[System.reservationStation['Add1'],
+					System.reservationStation['Add2'],
+					System.reservationStation['Add3']]
+					),
+
+					'SUBD': new InstructionType('SUBD',
+					parseInt(document.getElementById('add_or_sub').value),
+					0,
+					[InstructionType.PARA_REG,
+					InstructionType.PARA_REG,
+					InstructionType.PARA_REG],
+					function(p) {return p[1] + '-' + p[2];},
+					[System.reservationStation['Add1'],
+					System.reservationStation['Add2'],
+					System.reservationStation['Add3']]
+					),
+
+                    'MULD': new InstructionType('MULD',
+                    parseInt(document.getElementById('mul').value),
+                    0,
+                    [InstructionType.PARA_REG,
+                    InstructionType.PARA_REG,
+                    InstructionType.PARA_REG],
+                    function(p) {return p[1] + '*' + p[2];},
+                    [System.reservationStation['Mul1'],
+                    System.reservationStation['Mul2']]
+                    ),
+
+                    'DIVD': new InstructionType('DIVD',
+                    parseInt(document.getElementById('divide').value),
+                    0,
+                    [InstructionType.PARA_REG,
+                    InstructionType.PARA_REG,
+                    InstructionType.PARA_REG],
+                    function(p) {return p[1] + '/' + p[2];},
+                    [System.reservationStation['Mul1'],
+                    System.reservationStation['Mul2']]
+                    ),
+
+                    'LD': new InstructionType('LD',
+                    parseInt(document.getElementById('load').value),
+                    0,
+                    [InstructionType.PARA_REG,
+                    InstructionType.PARA_ADDR,
+                    InstructionType.PARA_REG_R],
+                    function(p) {return this.memory.load(p[2]+'+'+p[1]);}, //this = buffer
+                    [System.reservationStation['Load1'],
+                    System.reservationStation['Load2'],
+                    System.reservationStation['Load3']]
+                    ),
+				}
+                var main = new Main(instructions, System);
+                return main;
+			}
+
+            function initGUI(main) {
+                var NEW = {
+                    'new_reg' : function (name, i) {
+                        return '<tr id="reg_'+name+'"> <td>' + name + '</td> <td>0</td> <td> '+ main.system.regFile.regs[i] +'</td> </tr>';
+                    },
+                    'new_station' : function (name) {
+                        return '<tr id="station_'+name+'"><td></td><td>'+name+'</td><td>IDLE</td><td></td><td></td><td></td><td></td><td></td></tr>';
+                    },
+                    'new_inst' : function (name, pc) {
+                        return '<tr id="inst_'+pc +'"> <td>'+name+'</td><td></td><td></td><td></td> </tr>';
+                    },
+                    'new_load' : function (name) {
+                        return '<tr id="load_'+name+'"><td></td><td>'+name+'</td><td>IDLE</td><td></td><td></td></tr>';
+                    }
+                }
+                var _text = '';
+                for (var i = 0; i < main.system.regFile.count; i++) {
+                    _text += NEW.new_reg('F'+i, i);
+                }
+                $('#t_RegS').get(0).innerHTML += _text;
+                _text = '';
+                for (var i = 0; i < main.instructions.length; i++) {
+                    var inst = main.instructions[i];
+                    _text += NEW.new_inst(inst.type.name+' '+inst.para.join(', '), inst.pc);
+                }
+                $('#t_IS').get(0).innerHTML += _text;
+                _text = '';
+                for (rs in main.system.reservationStation) {
+                    if (rs.substring(0, 4) === 'Load')
+                        _text += NEW.new_load(rs);
+                }
+                $('#t_LS').get(0).innerHTML += _text;
+                _text = '';
+                for (rs in main.system.reservationStation) {
+                    if (rs.substring(0, 4) !== 'Load')
+                        _text += NEW.new_station(rs);
+                }
+                $('#t_RS').get(0).innerHTML += _text;
+                // alert(_text);
+            }
+
+            function update(main) {
+                document.getElementById('time').innerHTML = main.system.clock;
+                for (var i = 0; i < main.system.regFile.count; i++) {
+                    var busy = main.system.commonDataBus.getBusy(InstructionType.PARA_REG, 'F'+i);
+                    var value = main.system.regFile.getReg('F'+i);
+                    document.getElementById('reg_F'+i).cells[2].innerHTML = value;
+                }
+                for (var i = 0; i < main.instructions.length; i++) {
+                    var inst = main.instructions[i];
+                    var inst_tr = document.getElementById('inst_'+inst.pc);
+                    var est = inst.execSTime > 0 ? inst.execSTime : '';
+                    var _tmp = inst.execSTime > 0 ? ' ~ ' : '';
+                    var et = inst.execTime > 0 ? inst.execTime : '';
+                    inst_tr.cells[1].innerHTML = inst.issueTime > 0 ? inst.issueTime : '';
+                    inst_tr.cells[2].innerHTML = est + _tmp + et;
+                    inst_tr.cells[3].innerHTML = inst.wbTime > 0 ? inst.wbTime : '';
+                }
+                for (var rs in main.system.reservationStation) {
+                    var station = main.system.reservationStation[rs];
+                    if (rs.substring(0, 4) !== 'Load')
+                        var station_html = document.getElementById('station_'+rs);
+                    else
+                        var load_html = document.getElementById('load_' + rs);
+                    var _html;
+                    switch(station.state) {
+                        case STATUS.IDLE:
+                            _html = 'IDLE'; break;
+                        case STATUS.ISSUE:
+                            _html = 'ISSUE'; break;
+                        case STATUS.EXEC:
+                            _html = 'EXEC'; break;
+                        case STATUS.WRITE:
+                            _html = 'WRITE'; break;
+                    }
+                    
+                    
+                    var _time = -1;
+                    var _tags = new Array(3);
+                    var _op = '';
+                    var _plus = '+';
+                    if (station.state !== STATUS.IDLE) {
+                        if (station.instruction) {
+                            _time = station.instruction.time;
+                            _op = station.instruction.type.name;
+                        }
+                        for (var i = 0; i < 3; i ++) {
+                            _tags[i] = '';
+                            if (i >= station.para.length)
+                               ;
+                            else {
+                                // alert(i);
+                                if (station.tags[i]){
+                                    // _tags[i]
+                                    if (station.tags[i].name !== 'undefined')
+                                        _tags[i] = station.tags[i].name;
+                                    else
+                                        _tags[i] = '';
+                                    // _tags[i] = 'ddd';
+                                }
+                                else {
+                                    if (station.para[i] !== 'undefined')
+                                        _tags[i] = station.para[i];
+                                    else
+                                        _tags[i] = '';
+                                }
+                            }
+
+                        }
+
+                    }
+                    else {
+                        // station.instruction = null;
+                        for (var i = 0; i < 3; i++) {
+                            _tags[i] = '';
+                        }
+                        _plus = '';
+                        // station.instruction.type.name = '';
+                    }
+                    if (_tags[0])
+                    	document.getElementById('reg_'+_tags[0]).cells[1].innerHTML = rs;
+                    
+                    if (rs.substring(0, 4) !== 'Load') {
+                        station_html.cells[2].innerHTML = _html;
+                        station_html.cells[0].innerHTML = _time >= 0 ? _time : '';
+                        // alert(rs);
+                        // if (station.tags)
+                        
+                        // if (station.instruction) {
+
+
+                            station_html.cells[3].innerHTML = _op;
+                            station_html.cells[4].innerHTML = _tags[1];
+                            station_html.cells[5].innerHTML = _tags[2];
+                        // }
+                    }
+                    else {
+                        load_html.cells[2].innerHTML = _html;
+                        load_html.cells[0].innerHTML = _time >= 0 ? _time : '';
+                        load_html.cells[3].innerHTML = _tags[1] +_plus + _tags[2];
+                        if (station && station.instruction && _time === station.instruction.type.cycles) {
+							
+	                        	load_html.cells[3].innerHTML = _tags[1];
+                        }
+                        
+                        // if (station.instruction) {
+                        // }
+                        if (station.state === STATUS.WRITE) {
+                            load_html.cells[4].innerHTML = 'M['+_tags[1] +_plus + _tags[2]+']';
+                        }
+                        else {
+                            load_html.cells[4].innerHTML = '';
+                        }
+                    }
+                    $('#pc').get(0).innerHTML = main.issuedInst;
+                }
+            }
+
+            var main;
+            var interval;
+			$(document).ready(function() {
+				$("#config").click(function() {
+					$("html, body").animate({
+						scrollTop: $($(this).attr("href")).offset().top + "px"
+					}, {
+						duration: 500,
+						easing: "swing"
+					});
+                    var inst_text = document.getElementById("textarea1").value;
+					if (init_flag) {
+						main = init(inst_text);
+                        initGUI(main);
+						init_flag = false;
+					}
+					// alert(instest.PARA_REG);
+					$('#inst_status').fadeIn();
+					$('#reserve_station').fadeIn();
+					$('#reg_status').fadeIn();
+					$('#load_status').fadeIn();
+					// alert(inst_text);
+					return false;
+				});
+			});
+            var done = false;
+            $('#step').click(function() { 
+                if (done) {
+                    clearInterval(interval);
+                    $('#runover').attr('disabled', null);
+                }
+                else {
+                   done = main.step();      
+                    update(main); 
+                }  
+            });
+            $('#runover').click(function() {
+                interval = setInterval(function(){$('#step').click();}, 100);
+            })
+            $('#reset').click(function () {
+                if (interval)
+                    clearInterval(interval);
+                $("html, body").animate({
+                        scrollTop: $($(this).attr("href")).offset().top + "px"
+                    }, {
+                        duration: 500,
+                        easing: "swing"
+                    });
+                init_flag = true;
+                done = false;
+                document.getElementById('time').innerHTML = '';
+                document.getElementById('pc').innerHTML = '';
+                $('#t_RS').get(0).innerHTML = null;
+                $('#t_LS').get(0).innerHTML = null;
+                $('#t_IS').get(0).innerHTML = null;
+                $('#t_RegS').get(0).innerHTML = null;
+                IS.style.display="none";
+                RS.style.display="none";
+                RegS.style.display="none";
+                LS.style.display="none";
+            })
+            
+			</script>
+		</body>
+	</html>
