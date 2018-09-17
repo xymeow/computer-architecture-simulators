@@ -31,12 +31,12 @@
 				<div class="divider"></div>
 				<li align="center">PC：<span id="pc"></span></li>
 				<li align="center">time: <span id="time"></span></li>
-				<a style="margin-top: 0px;" class="waves-effect waves-light btn blue lighten-3 white-text" id="step">前进一步</a>
+				<a style="margin-top: 0px;" class="waves-effect waves-light btn blue lighten-3 white-text" id="step">Step</a>
 				<!-- <a class="waves-effect waves-light btn blue lighten-3 white-text" id="back">后退一步</a> -->
-				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="runover">执行到底</a>
+				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="runover">Run</a>
 				<!-- <a class="waves-effect waves-light btn blue lighten-3 white-text" id="step5">前进5步</a>
 				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="back5">后退5步</a> -->
-				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="reset" href="#top">重置</a>
+				<a class="waves-effect waves-light btn blue lighten-3 white-text" id="reset" href="#top">Reset</a>
 				<!-- <footer class="page-footer">author: xymeow</footer> -->
 			</ul>
 		</header>
@@ -46,7 +46,7 @@
 			
 				<div class="row" id="top">
 					<div align="center">
-						<h5>设置</h5>
+						<h5>Config</h5>
 					</div>
 					<div class="col s6">
 						<div class="container">
@@ -61,7 +61,7 @@
 											divd f12, f2, f8
 											addd f8, f10, f4
 										</textarea>
-										<label for="textarea1">指令</label>
+										<label for="textarea1">Instruction</label>
 									</div>
 								</div>
 							</form>
@@ -70,11 +70,11 @@
 
 					<div class="col s6">
 						<div class="container">
-							功能部件执行时间
+							Time cost for an instruction
 							<div class="row">
 								<div class="input-field col s6">
 									<input value="2" id="add_or_sub" type="text">
-									<label class="active" for="add_or_sub">加/减</label>
+									<label class="active" for="add_or_sub">subd/addd</label>
 								</div>
 								<div class="input-field col s6">
 									<input value="2" id="load" type="text">
@@ -85,18 +85,18 @@
 							<div class="row">
 								<div class="input-field col s6 ">
 									<input value="10" id="mul" type="text">
-									<label class="active " for="mul">乘法</label>
+									<label class="active " for="mul">muld</label>
 								</div>
 								<div class="input-field col s6">
 									<input value="40" id="divide" type="text">
-									<label class="active" for="divide">除法</label>
+									<label class="active" for="divide">divd</label>
 								</div>
 							</div>
 
 						</div>
 					</div>
 					<div align="center">
-						<a class="waves-effect waves-light btn blue lighten-3 white-text" id="config" href="#show">设定完成</a>
+						<a class="waves-effect waves-light btn blue lighten-3 white-text" id="config" href="#show">Start</a>
 					</div>
 					
 				</div>
@@ -106,13 +106,13 @@
 			<div class="row" id="show">
 			<div class="col s8">
 				<table class="striped" id="inst_status">
-				<caption>指令状态表</caption>
+				<caption>Instruction Status Table</caption>
 					<thead>
 						<tr>
-							<th>指令</th>
-							<th>流出</th>
-							<th>执行</th>
-							<th>写结果</th>
+							<th>Inst</th>
+							<th>Issue</th>
+							<th>Excecute</th>
+							<th>Write Result</th>
 						</tr>
 					</thead>
 					<tbody id="t_IS">
@@ -121,12 +121,12 @@
 				</table>
 				
 				<table class="striped" id="reserve_station">
-					<caption>保留站信息</caption>
+					<caption>Station info</caption>
 					<thead>
 						<tr>
-							<th>剩余时间</th>
-							<th data-field="name">站名</th>
-							<th>状态</th>
+							<th>Time left</th>
+							<th data-field="name">Name</th>
+							<th>Status</th>
 							<th>Op</th>
 							<th>Vj/Qj</th>
 							<th>Vk/Qk</th>
@@ -137,14 +137,14 @@
 					</tbody>
 				</table>
 				<table class="striped" id="load_status">
-					<caption>load部件</caption>
+					<caption>load parts</caption>
 					<thead>
 						<tr>
-                            <th>剩余时间</th>
-							<th>名称</th>
-							<th>状态</th>
-							<th>地址</th>
-							<th>值</th>
+                            <th>Time ledt</th>
+							<th>Name</th>
+							<th>Status</th>
+							<th>Addr</th>
+							<th>Value</th>
 						</tr>
 					</thead>
 					<tbody id="t_LS">
@@ -154,12 +154,12 @@
 			</div>
 			<div class="col s4">
 				<table class="striped" id="reg_status">
-					<caption>寄存器状态</caption>
+					<caption>Register Status</caption>
 					<thead>
 						<tr>
-							<th>寄存器名</th>
-							<th>寄存器状态</th>
-							<th>寄存器内容</th>
+							<th>Name</th>
+							<th>Status</th>
+							<th>Value</th>
 						</tr>
 					</thead>
 					<tbody id="t_RegS">
